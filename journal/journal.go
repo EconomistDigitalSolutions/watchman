@@ -39,3 +39,7 @@ func LogInfo(message string) {
 func LogWorker(message ...interface{}) {
 	LogChannel("worker", message)
 }
+
+func LogDB(message string) {
+	LogChannel("database", message)
+}
