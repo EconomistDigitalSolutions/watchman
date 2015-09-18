@@ -37,6 +37,31 @@ func SetLogFile(file string) {
 	SetLogger(f)
 }
 
+// GetLogFile sets the log file, and tries to
+// create the file if it doesn't exist.
+func GetLogFile(logFile, fallback string) string {
+	// The log file can be supplied by an
+	// environment variable (for example),
+	// so we also send a fallback in case that is ever empty.
+	if logFile == "" && fallback == "" {
+		stdlog.Fatal("please supply a log file name and fallback file")
+	}
+
+	if logFile == "" {
+		logFile = fallback
+	}
+
+	if _, err := os.Stat(logFile); err != nil {
+		LogError(fmt.Sprintf("log file %s does not exist", logFile))
+		_, err := os.Open(logFile)
+		if err != nil {
+			stdlog.Fatalf("unable to open log file: %s\n", logFile)
+		}
+		return logFile
+	}
+	return logFile
+}
+
 // LogRequest logs details of an HTTP request.
 func LogRequest(r *http.Request) {
 	logger.Log("channel", "request", "service", Service, "method", r.Method, "url", r.URL.String(), "headers", r.Header, "ts", time.Now())
