@@ -54,7 +54,7 @@ func GetLogFile(logFile, fallback string) (string, error) {
 
 	if _, err := os.Stat(logFile); err != nil {
 		LogError(fmt.Sprintf("log file %s does not exist", logFile))
-		_, err := os.Open(logFile)
+		_, err := os.Create(logFile)
 		if err != nil {
 			return "", errors.New(fmt.Sprintf("unable to open log file: %s\n", logFile))
 		}
