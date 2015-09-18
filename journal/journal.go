@@ -1,6 +1,7 @@
 package journal
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -39,12 +40,12 @@ func SetLogFile(file string) {
 
 // GetLogFile sets the log file, and tries to
 // create the file if it doesn't exist.
-func GetLogFile(logFile, fallback string) string {
+func GetLogFile(logFile, fallback string) (string, error) {
 	// The log file can be supplied by an
 	// environment variable (for example),
 	// so we also send a fallback in case that is ever empty.
 	if logFile == "" && fallback == "" {
-		stdlog.Fatal("please supply a log file name and fallback file")
+		return "", errors.New("please supply a log file name and fallback file")
 	}
 
 	if logFile == "" {
@@ -55,11 +56,11 @@ func GetLogFile(logFile, fallback string) string {
 		LogError(fmt.Sprintf("log file %s does not exist", logFile))
 		_, err := os.Open(logFile)
 		if err != nil {
-			stdlog.Fatalf("unable to open log file: %s\n", logFile)
+			return "", errors.New(fmt.Sprintf("unable to open log file: %s\n", logFile))
 		}
-		return logFile
+		return logFile, nil
 	}
-	return logFile
+	return logFile, nil
 }
 
 // LogRequest logs details of an HTTP request.
