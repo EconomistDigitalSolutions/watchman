@@ -1,3 +1,6 @@
 package meter
 
-import _ "expvar"
+import (
+	_ "expvar"
+	_ "net/http/pprof"
+)
