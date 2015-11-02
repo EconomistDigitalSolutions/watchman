@@ -73,9 +73,15 @@ func LogChannel(channel string, message ...interface{}) {
 	logger.Log("channel", channel, "service", Service, "message", message, "ts", time.Now())
 }
 
+// LogError logs error data to the error channel, but allows some extra info to be passed along as a top level concern.
+func LogErrorWithInfo(message string, infoPairs ...interface{}) {
+	keyVals := append([]interface{}{"channel", "error", "service", Service, "ts", time.Now(), "message", message}, infoPairs...)
+	logger.Log(keyVals...)
+}
+
 // LogError logs error data to the error channel
 func LogError(message string) {
-	LogChannel("error", message)
+	LogErrorWithInfo(message)
 }
 
 // LogInfo logs informational data.
@@ -86,4 +92,15 @@ func LogInfo(message string) {
 // LogWorker logs information around queue worker operations.
 func LogWorker(message ...interface{}) {
 	LogChannel("worker", message)
+}
+
+// LogEvent logs event information to the event channel.
+func LogEvent(eventName string) {
+	logger.Log("channel", "event", "service", Service, "event", eventName, "ts", time.Now())
+}
+
+// LogEvent logs event information to the event channel, but allows some extra info to be passed along as a top level concern.
+func LogEventWithInfo(eventName string, infoPairs ...interface{}) {
+	keyVals := append([]interface{}{"channel", "event", "service", Service, "ts", time.Now(), "event", eventName}, infoPairs...)
+	logger.Log(keyVals...)
 }
