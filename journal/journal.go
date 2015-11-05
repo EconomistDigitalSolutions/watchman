@@ -1,8 +1,6 @@
 package journal
 
 import (
-	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -29,69 +27,36 @@ func SetLogger(w io.Writer) {
 	stdlog.SetOutput(kitlog.NewStdlibAdapter(logger))
 }
 
-// SetLogFile allows the user to output log data to a file.
-func SetLogFile(file string) {
-	f, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		LogError(fmt.Sprintf("error opening log file: %v", err))
-	}
-	SetLogger(f)
-}
+// Simplified set of logging functions based on this:
+// http://dave.cheney.net/2015/11/05/lets-talk-about-logging
 
-// GetLogFile sets the log file, and tries to
-// create the file if it doesn't exist.
-func GetLogFile(logFile, fallback string) (string, error) {
-	// The log file can be supplied by an
-	// environment variable (for example),
-	// so we also send a fallback in case that is ever empty.
-	if logFile == "" && fallback == "" {
-		return "", errors.New("please supply a log file name and fallback file")
-	}
-
-	if logFile == "" {
-		logFile = fallback
-	}
-
-	if _, err := os.Stat(logFile); err != nil {
-		LogError(fmt.Sprintf("log file %s does not exist", logFile))
-		_, err := os.Create(logFile)
-		if err != nil {
-			return "", errors.New(fmt.Sprintf("unable to open log file: %s\n", logFile))
-		}
-		return logFile, nil
-	}
-	return logFile, nil
-}
+// If you want to do weird logging in your own services by all
+// means create convenience functions that delegate to LogInfo.
 
 // LogRequest logs details of an HTTP request.
 func LogRequest(r *http.Request) {
 	logger.Log("channel", "request", "service", Service, "method", r.Method, "url", r.URL.String(), "headers", r.Header, "ts", time.Now())
 }
 
-// LogChannel logs data to a log channel.
-func LogChannel(channel string, message ...interface{}) {
-	logger.Log("channel", channel, "service", Service, "message", message, "ts", time.Now())
+// LogInfo logs informational data.
+func LogInfo(message ...interface{}) {
+	logger.Log("level", "INFO", "service", Service, "message", message, "ts", time.Now())
 }
+
+// LogDebug logs debug data.
+func LogDebug(message ...interface{}) {
+	if os.Getenv("DEBUG") != "" {
+		logger.Log("level", "DEBUG", "service", Service, "message", message, "ts", time.Now())
+	}
+}
+
+// These functions are open for discussion and are being used in
+// at least one service right now.
 
 // LogError logs error data to the error channel, but allows some extra info to be passed along as a top level concern.
 func LogErrorWithInfo(message string, infoPairs ...interface{}) {
 	keyVals := append([]interface{}{"channel", "error", "service", Service, "ts", time.Now(), "message", message}, infoPairs...)
 	logger.Log(keyVals...)
-}
-
-// LogError logs error data to the error channel
-func LogError(message string) {
-	LogErrorWithInfo(message)
-}
-
-// LogInfo logs informational data.
-func LogInfo(message string) {
-	LogChannel("information", message)
-}
-
-// LogWorker logs information around queue worker operations.
-func LogWorker(message ...interface{}) {
-	LogChannel("worker", message)
 }
 
 // LogEvent logs event information to the event channel.
