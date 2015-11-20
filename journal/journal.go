@@ -70,7 +70,7 @@ func LogRequest(r *http.Request) {
 
 // LogRequestUUID logs details of an HTTP request with a UUID.
 func LogRequestUUID(r *http.Request, UUID string) {
-	logger.Log("channel", "request", "service", Service, "method", r.Method, "url", r.URL.String(), "headers", r.Header, "ts", time.Now(), "UUID", uuid)
+	logger.Log("channel", "request", "service", Service, "method", r.Method, "url", r.URL.String(), "headers", r.Header, "ts", time.Now(), "UUID", UUID)
 }
 
 // LogChannel logs data to a log channel.
