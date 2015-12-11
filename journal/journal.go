@@ -68,6 +68,11 @@ func LogRequest(r *http.Request) {
 	logger.Log("channel", "request", "service", Service, "method", r.Method, "url", r.URL.String(), "headers", r.Header, "ts", time.Now())
 }
 
+// LogResponseFromHandler logs details of an HTTP request with response code from Handler.
+func LogResponseFromHandler(r *http.Request, responseCode int) {
+	logger.Log("channel", "request", "service", Service, "method", r.Method, "url", r.URL.String(), "responseCode", responseCode, "headers", r.Header, "ts", time.Now())
+}
+
 // LogRequestUUID logs details of an HTTP request with a UUID.
 func LogRequestUUID(r *http.Request, UUID string) {
 	logger.Log("channel", "request", "service", Service, "method", r.Method, "url", r.URL.String(), "headers", r.Header, "ts", time.Now(), "UUID", UUID)
