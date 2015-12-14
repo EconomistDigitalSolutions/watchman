@@ -68,9 +68,10 @@ func LogRequest(r *http.Request) {
 	logger.Log("channel", "request", "service", Service, "method", r.Method, "url", r.URL.String(), "headers", r.Header, "ts", time.Now())
 }
 
-// LogResponseFromHandler logs details of an HTTP request with response code from Handler.
-func LogResponseFromHandler(r *http.Request, responseCode int) {
-	logger.Log("channel", "request", "service", Service, "method", r.Method, "url", r.URL.String(), "responseCode", responseCode, "headers", r.Header, "ts", time.Now())
+// LogRequestWithInfo logs request data to the reqyest channel, but allows some extra info to be passed along
+func LogRequestWithInfo(r *http.Request, infoPairs ...interface{}) {
+	keyVals := append([]interface{}{"channel", "request", "service", Service, "method", r.Method, "url", r.URL.String(), "headers", r.Header, "ts", time.Now()}, infoPairs...)
+	logger.Log(keyVals...)
 }
 
 // LogRequestUUID logs details of an HTTP request with a UUID.
