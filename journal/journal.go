@@ -84,7 +84,13 @@ func LogChannel(channel string, message ...interface{}) {
 	logger.Log("channel", channel, "service", Service, "message", message, "ts", time.Now())
 }
 
-// LogError logs error data to the error channel, but allows some extra info to be passed along as a top level concern.
+// LogChannelWithInfo logs pairs of information to a specific channel
+func LogChannelWithInfo(channel string, infoPairs ...interface{}) {
+	keyVals := append([]interface{}{"channel", channel, "service", Service, "ts", time.Now()}, infoPairs...)
+	logger.Log(keyVals...)
+}
+
+// LogErrorWithInfo logs error data to the error channel, but allows some extra info to be passed along as a top level concern.
 func LogErrorWithInfo(message string, infoPairs ...interface{}) {
 	keyVals := append([]interface{}{"channel", "error", "service", Service, "ts", time.Now(), "message", message}, infoPairs...)
 	logger.Log(keyVals...)
